@@ -2,8 +2,8 @@ import streamlit as st
 import numpy as np
 import joblib 
 
-model=joblib.load("heart_model.pkl")
-scaler = joblib.load("scaler.pkl")
+model=joblib.load("models/heart_model.pkl")
+scaler = joblib.load("models/scaler.pkl")
 
 st.title("Heart Disease Prediction App")
 
@@ -30,7 +30,7 @@ st.sidebar.info(
     target- 0 = low risk of heart disease, 1 = high risk of heart disease  
     --------------------------  
     Dataset used- Heart Disease Dataset  
-    Link- https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset?utm_source=chatgpt.com&select=heart.csv
+    Source- Kaggle
     """
 )
 
@@ -79,5 +79,3 @@ if st.button("Predict"):
         st.error("High chance of Heart Disease")
     else:
         st.success("Low chance of Heart Disease")
-
-# st.write("My first AI-powered prediction website!")
