@@ -1,81 +1,174 @@
 import streamlit as st
 import numpy as np
-import joblib 
+import joblib
 
-model=joblib.load("models/heart_model.pkl")
-scaler = joblib.load("models/scaler.pkl")
+# ---------------- PAGE CONFIG ---------------- #
 
-st.title("Heart Disease Prediction App")
-
-st.sidebar.title("About")
-st.sidebar.success("Model Accuracy : 94%")
-st.sidebar.info(
-    """This AI model predicts the likelihood of heart disease using machine learning.  
-    It takes input of the following attributes-  
-    Attribute Information:  
-    -------------------------  
-    age-age  
-    sex- sex  
-    cp- chest pain type (4 values)  
-    trestbps- resting blood pressure  
-    chol- serum cholestoral in mg/dl  
-    fbs- fasting blood sugar > 120 mg/dl  
-    restecg- resting electrocardiographic results (values 0,1,2)  
-    thalach- maximum heart rate achieved  
-    exang- exercise induced angina  
-    oldpeak = ST depression induced by exercise relative to rest  
-    slope- the slope of the peak exercise ST segment  
-    ca- number of major vessels (0-3) colored by flourosopy  
-    thal: 0 = normal; 1 = fixed defect; 2 = reversable defect
-    target- 0 = low risk of heart disease, 1 = high risk of heart disease  
-    --------------------------  
-    Dataset used- Heart Disease Dataset  
-    Source- Kaggle
-    """
+st.set_page_config(
+    page_title="Cardio-Predict",
+    page_icon="🫀",
+    layout="centered"
 )
 
-age = st.number_input("Age", min_value=1, max_value=100)
+# ---------------- LOAD MODEL ---------------- #
 
-sex = st.selectbox("Sex", ["Male", "Female"])
+model = joblib.load("models/heart_model.pkl")
+scaler = joblib.load("models/scaler.pkl")
 
-cp = st.slider("Chest Pain Type", 0, 3)
+# ---------------- TITLE ---------------- #
 
-trestbps = st.number_input("Resting Blood Pressure")
+st.title("🫀 Cardio-Predict ")
+st.markdown(
+    "Predict the likelihood of heart disease using Machine Learning."
+)
 
-chol = st.number_input("Cholesterol")
+st.divider()
 
-fbs = st.selectbox("Fasting Blood Sugar > 120", [0,1])
+# ---------------- SIDEBAR ---------------- #
 
-restecg = st.slider("Rest ECG", 0, 2)
+st.sidebar.title("ℹ️ About")
 
-thalach = st.number_input("Maximum Heart Rate")
+st.sidebar.success("✅ Model Accuracy: 94%")
 
-exang = st.selectbox("Exercise Induced Angina", [0,1])
+st.sidebar.info(
+    """
+This ML model predicts the probability of heart disease based on medical attributes.
 
-oldpeak = st.number_input("Oldpeak")
+### Features Used
+- Age
+- Sex
+- Chest Pain Type
+- Resting Blood Pressure
+- Cholesterol
+- Fasting Blood Sugar
+- Resting ECG Results
+- Maximum Heart Rate
+- Exercise Induced Angina
+- Oldpeak
+- Slope
+- Major Vessels
+- Thalassemia
 
-slope = st.slider("Slope", 0, 2)
+### Dataset
+Heart Disease Dataset from Kaggle
+"""
+)
 
-ca = st.slider("Number of Major Vessels", 0, 4)
+# ---------------- INPUT SECTION ---------------- #
 
-thal = st.slider("Thal", 0, 3)
+st.subheader("🩺 Enter Patient Details")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    age = st.number_input("Age", min_value=1, max_value=100)
+
+    sex = st.selectbox(
+        "Sex",
+        ["Male", "Female"]
+    )
+
+    cp = st.slider(
+        "Chest Pain Type",
+        0, 3
+    )
+
+    trestbps = st.number_input(
+        "Resting Blood Pressure"
+    )
+
+    chol = st.number_input(
+        "Cholesterol Level"
+    )
+
+    fbs = st.selectbox(
+        "Fasting Blood Sugar > 120 mg/dl",
+        [0, 1]
+    )
+
+    restecg = st.slider(
+        "Rest ECG",
+        0, 2
+    )
+
+with col2:
+
+    thalach = st.number_input(
+        "Maximum Heart Rate"
+    )
+
+    exang = st.selectbox(
+        "Exercise Induced Angina",
+        [0, 1]
+    )
+
+    oldpeak = st.number_input(
+        "Oldpeak",
+        min_value=0.0
+    )
+
+    slope = st.slider(
+        "Slope",
+        0, 2
+    )
+
+    ca = st.slider(
+        "Number of Major Vessels",
+        0, 4
+    )
+
+    thal = st.slider(
+        "Thal",
+        0, 3
+    )
+
+# ---------------- DATA PREPROCESSING ---------------- #
 
 if sex == "Male":
-    sex = 1
+    sex = 1 
 else:
     sex = 0
 
-if st.button("Predict"):
+# ---------------- PREDICTION ---------------- #
 
-    input_data = np.array([[age, sex, cp, trestbps, chol,
-                            fbs, restecg, thalach,
-                            exang, oldpeak, slope,
-                            ca, thal]])
+st.divider()
+
+if st.button("🔍 Predict Heart Disease Risk"):
+
+    input_data = np.array([[
+        age,
+        sex,
+        cp,
+        trestbps,
+        chol,
+        fbs,
+        restecg,
+        thalach,
+        exang,
+        oldpeak,
+        slope,
+        ca,
+        thal
+    ]])
+
     input_data = scaler.transform(input_data)
-    
+
     prediction = model.predict(input_data)
 
+    st.subheader("Prediction Result")
+
     if prediction[0] == 1:
-        st.error("High chance of Heart Disease")
+        st.error(
+            "⚠️ High chance of Heart Disease detected."
+        )
+
     else:
-        st.success("Low chance of Heart Disease")
+        st.success(
+            "✅ Low chance of Heart Disease."
+        )
+
+st.divider()
+
+st.caption(
+    "Made using Streamlit and Scikit-learn"
+)
